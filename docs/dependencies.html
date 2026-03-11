@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>neco 依存ライブラリ</title>
+  <style>
+    body { font-family: sans-serif; margin: 1rem; }
+    table { border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 0.4rem 0.8rem; text-align: left; }
+    th { background: #eee; }
+  </style>
+</head>
+<body>
+  <h1>neco 依存ライブラリ（app）</h1>
+  <p>Rust クレート名とバージョン、簡潔な説明。</p>
+  <table>
+    <thead>
+      <tr>
+        <th>クレート名</th>
+        <th>バージョン</th>
+        <th>説明</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>clap</td><td>4.5</td><td>CLI 引数パース（derive 使用）</td></tr>
+      <tr><td>reqwest</td><td>0.12</td><td>HTTP クライアント（LM Studio API 呼び出し）</td></tr>
+      <tr><td>serde</td><td>1.0</td><td>シリアライズ／デシリアライズ</td></tr>
+      <tr><td>serde_json</td><td>1.0</td><td>JSON 処理</td></tr>
+      <tr><td>sysinfo</td><td>0.30</td><td>プロセス情報取得（親プロセス名でシェル判定）</td></tr>
+      <tr><td>tokio</td><td>1.41</td><td>非同期ランタイム</td></tr>
+      <tr><td>async-trait</td><td>0.1</td><td>非同期トレイトの記述</td></tr>
+    </tbody>
+  </table>
+  <p>dev-dependencies: mockall（テスト用モック）, wiremock（HTTP モックサーバー）</p>
+  <p>コードカバレッジ: <a href="coverage/html/index.html">coverage/html/index.html</a>（main 除外で 90% 以上を目標）</p>
+</body>
+</html>
