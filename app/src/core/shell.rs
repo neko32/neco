@@ -83,11 +83,12 @@ impl ShellDetector for SysinfoShellDetector {
         let mut sys = System::new();
         sys.refresh_processes();
 
-        let mut current = sys.process(pid).and_then(|p| p.parent()).ok_or_else(|| {
-            UnsupportedShellError {
-                parent_name: "（取得できませんでした）".to_string(),
-            }
-        })?;
+        let mut current =
+            sys.process(pid)
+                .and_then(|p| p.parent())
+                .ok_or_else(|| UnsupportedShellError {
+                    parent_name: "（取得できませんでした）".to_string(),
+                })?;
 
         // cargo / cargo.exe の場合はさらに親をたどってシェルを判定する
         for _ in 0..MAX_ANCESTOR_DEPTH {
