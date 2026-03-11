@@ -92,11 +92,8 @@ impl ShellDetector for SysinfoShellDetector {
 
         // cargo / cargo.exe の場合はさらに親をたどってシェルを判定する
         for _ in 0..MAX_ANCESTOR_DEPTH {
-            let proc = match sys.process(current) {
-                Some(p) => p,
-                None => {
-                    break;
-                }
+            let Some(proc) = sys.process(current) else {
+                break;
             };
             let name = proc.name().to_lowercase();
             if is_cargo_process_name(&name) {
