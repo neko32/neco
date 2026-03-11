@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            app/target
+          key: neco-${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock', 'app/Cargo.toml') }}
+
+      - name: Check format
+        run: cargo fmt --all -- --check
+        working-directory: app
+
+      - name: Build
+        run: cargo build --all-targets
+        working-directory: app
+
+      - name: Clippy
+        run: cargo clippy --all-targets -- -D warnings -W clippy::pedantic
+        working-directory: app
+
+      - name: Test
+        run: cargo test
+        working-directory: app
+
+      - name: Install cargo-llvm-cov
+        uses: taiki-e/install-action@cargo-llvm-cov
+        with:
+          version: "latest"
+
+      - name: Coverage (lib 90%+)
+        run: cargo llvm-cov --no-clean --ignore-filename-regex 'main\.rs' --fail-under-lines 90
+        working-directory: app

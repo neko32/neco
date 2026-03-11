@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust (musl)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-unknown-linux-musl
+
+      - name: Build release binary
+        run: cargo build --release --bin neco --target x86_64-unknown-linux-musl
+        working-directory: app
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: neco-linux-x86_64
+          path: app/target/x86_64-unknown-linux-musl/release/neco
