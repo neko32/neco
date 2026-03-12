@@ -45,6 +45,11 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         &client,
     ))?;
 
+    // is_script が true なら TMP_DIR/{file_name} にスクリプトを書き出す（issue #2）
+    if let Some(path) = neco::core::write_script_if_needed(&content)? {
+        println!("{path}");
+    }
+
     // 仕様: API が返す JSON をそのままコンソールに表示
     println!("{content}");
     Ok(())
