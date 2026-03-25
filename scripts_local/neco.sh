@@ -8,3 +8,4 @@ if [ -z "$*" ]; then
   exit 1
 fi
 cargo run -q --bin neco -- "$@"
+
