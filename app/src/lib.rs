@@ -4,9 +4,9 @@ pub mod api;
 pub mod core;
 
 use api::LmStudioClient;
-use core::{build_messages, ShellDetector};
+use core::{build_messages, Shell, ShellDetector};
 
-/// コマンド説明とオプションから LM Studio で生成した JSON 文字列を取得する。
+/// コマンド説明とオプションから LM Studio で生成した JSON 文字列と、判定したシェルを返す。
 /// テスト可能にするため、シェル判定と API クライアントを注入する。
 ///
 /// # Errors
@@ -16,7 +16,7 @@ pub async fn generate<D, C>(
     temperature: f64,
     detector: &D,
     client: &C,
-) -> Result<String, Box<dyn std::error::Error>>
+) -> Result<(String, Shell), Box<dyn std::error::Error>>
 where
     D: ShellDetector,
     C: LmStudioClient,
@@ -37,7 +37,7 @@ where
         .chat(&system, &user, temperature)
         .await
         .map_err(Box::<dyn std::error::Error>::from)?;
-    Ok(content)
+    Ok((content, shell))
 }
 
 #[cfg(test)]
@@ -53,9 +53,10 @@ mod tests {
         let client = MockLmStudioClient {
             response: r#"{"command_or_script":"ls","description":"list"}"#.to_string(),
         };
-        let out = generate("ファイル一覧", 0.0, &detector, &client)
+        let (out, shell) = generate("ファイル一覧", 0.0, &detector, &client)
             .await
             .unwrap();
+        assert!(matches!(shell, Shell::Bash));
         assert!(out.contains("command_or_script"));
         assert!(out.contains("ls"));
     }
