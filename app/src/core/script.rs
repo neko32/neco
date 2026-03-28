@@ -47,9 +47,14 @@ pub fn write_script_if_needed(content: &str) -> Result<Option<String>, Box<dyn s
 mod tests {
     use super::*;
     use std::env;
+    use std::sync::Mutex;
+
+    /// 並列テストで `TMP_DIR` が競合しないようにする
+    static TMP_DIR_TEST_LOCK: Mutex<()> = Mutex::new(());
 
     #[test]
     fn test_resolve_tmp_dir_uses_env() {
+        let _guard = TMP_DIR_TEST_LOCK.lock().unwrap();
         env::set_var("TMP_DIR", "/custom/tmp");
         let d = resolve_tmp_dir();
         env::remove_var("TMP_DIR");
@@ -69,6 +74,7 @@ mod tests {
 
     #[test]
     fn test_write_script_if_needed_writes_file_and_returns_path() {
+        let _guard = TMP_DIR_TEST_LOCK.lock().unwrap();
         let tmp = std::env::temp_dir();
         let sub = tmp.join("neco_script_test");
         let _ = fs::remove_dir_all(&sub);
